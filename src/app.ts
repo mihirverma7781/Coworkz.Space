@@ -4,6 +4,9 @@ import { container } from "tsyringe";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import SigninController from "./signin/SigninController";
+import SignupController from "./signup/SignupController";
+import SignoutController from "./signout/SignoutController";
+import UserController from "./user/UserController";
 
 // initialize app
 const app: Express = express();
@@ -17,13 +20,16 @@ app.use(cookieParser());
 // cors
 app.use(cors());
 
-// const signinRepository = new SigninRepository();
-// const signinService = new SigninService(signinRepository);
-// const signinController = new SigninController(signinService);
-
+// dependancy injection
 const signinController = container.resolve(SigninController);
+const signupController = container.resolve(SignupController);
+const signoutController = container.resolve(SignoutController);
+const currentUserController = container.resolve(UserController);
 
 // route handling
 app.use("/api/users", signinController.routes());
+app.use("/api/users", signupController.routes());
+app.use("/api/users", signoutController.routes());
+app.use("/api/users", currentUserController.routes());
 
 export default app;
