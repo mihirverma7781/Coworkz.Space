@@ -26,9 +26,9 @@ export default class SignupController {
   private signupRequest = async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
-      // if (!errors.isEmpty()) {
-      //   return res.status(400).json({ errors: errors.array() });
-      // }
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
       await this.signupService.signup(); // Assuming this handles the sign-up process
       return res.json({ message: "Signup successful" });
     } catch (error) {

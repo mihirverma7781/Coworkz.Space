@@ -3,9 +3,9 @@ import express, { Express } from "express";
 import { container } from "tsyringe";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import SigninController from "./signin/SigninController";
-import SignupController from "./signup/SignupController";
-import SignoutController from "./signout/SignoutController";
+import SigninController from "./modules/signin/SigninController";
+import SignupController from "./modules/signup/SignupController";
+import SignoutController from "./modules/signout/SignoutController";
 import UserController from "./user/UserController";
 
 // initialize app
