@@ -17,7 +17,9 @@ export default class UserController {
   }
 
   routes() {
-    this.router.get("/test", (req, res) => res.send(this.testRoute()));
+    this.router.get("/test", (request, response) =>
+      response.send(this.testRoute()),
+    );
     return this.router;
   }
 }

@@ -1,9 +1,10 @@
 // SignupController.ts
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { autoInjectable } from "tsyringe";
 import { validationResult } from "express-validator";
 import SignupService from "./SignupService";
 import SignupValidator from "./validations/SignupValidator";
+import { APIError, BadRequestError } from "../../utils/error/ErrorHandler";
 
 @autoInjectable()
 export default class SignupController {
@@ -18,22 +19,27 @@ export default class SignupController {
   }
 
   // Testing route
-  private testRequest = (req: Request, res: Response) => {
-    res.send(this.signupService.testService());
+  public testRequest = (request: Request, response: Response) => {
+    response.send(this.signupService.testService());
   };
 
   // Sign-up route
-  private signupRequest = async (req: Request, res: Response) => {
+  public signupRequest = async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ) => {
     try {
-      const errors = validationResult(req);
+      const errors = validationResult(request);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        throw new BadRequestError("Invalid Email or Password");
       }
       await this.signupService.signup(); // Assuming this handles the sign-up process
-      return res.json({ message: "Signup successful" });
+      throw new APIError("Error Creating User Account");
+      // return response.json({ message: "Signup successful" });
     } catch (error) {
       console.error("Error in signupRequest:", error);
-      return res.status(500).json({ error: "Internal server error" });
+      next(error);
     }
   };
 
