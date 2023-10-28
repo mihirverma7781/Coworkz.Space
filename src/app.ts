@@ -10,6 +10,7 @@ import SignoutController from "./modules/signout/SignoutController";
 import UserController from "./modules/user/UserController";
 import ErrorHandler from "./middlewares/ErrorMiddleware";
 import { NotFoundError } from "./utils/error/ErrorHandler";
+import Database from "./configs/db.config";
 
 // initialize app
 const app: Express = express();
@@ -22,6 +23,10 @@ app.use(cookieParser());
 
 // cors
 app.use(cors());
+
+// db connection
+const db = new Database();
+db.connectDB();
 
 // dependency injection
 const signinController = container.resolve(SigninController);
