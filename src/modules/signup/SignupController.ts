@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // SignupController.ts
 import { Router, Request, Response, NextFunction } from "express";
 import { autoInjectable } from "tsyringe";
@@ -23,8 +24,8 @@ export default class SignupController {
     response.send(this.signupService.testService());
   };
 
-  // Sign-up route
-  public signupRequest = async (
+  // Sign-up OTP Controller
+  public signupWithOTP = async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -32,11 +33,18 @@ export default class SignupController {
     try {
       const errors = validationResult(request);
       if (!errors.isEmpty()) {
-        throw new BadRequestError("Invalid Email or Password");
+        const errorMessages = errors
+          .array()
+          .map((error) => error.msg)
+          .join(", ");
+        throw new BadRequestError(errorMessages);
       }
-      await this.signupService.signup(); // Assuming this handles the sign-up process
-      throw new APIError("Error Creating User Account");
-      // return response.json({ message: "Signup successful" });
+      const input = request.body;
+      const result: any = await this.signupService.signup(input);
+      if (!Object.keys(result) || result.code === 200) {
+        throw new APIError("Error Creating User Account");
+      }
+      return response.json(result);
     } catch (error) {
       console.error("Error in signupRequest:", error);
       next(error);
@@ -47,9 +55,9 @@ export default class SignupController {
   public routes() {
     this.router.get("/test", this.testRequest);
     this.router.post(
-      "/signup",
-      this.signupValidator.signupBodyValidator(),
-      this.signupRequest,
+      "/signup-sendotp",
+      this.signupValidator.otpSignupValidator(),
+      this.signupWithOTP,
     );
     return this.router;
   }

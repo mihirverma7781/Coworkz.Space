@@ -1,5 +1,6 @@
 import { autoInjectable } from "tsyringe";
 import SignupRepository from "./SignupRepository";
+import NSignup from "./typings";
 
 @autoInjectable()
 export default class SignupService {
@@ -13,7 +14,7 @@ export default class SignupService {
     return this.signupRepository.testRepository();
   }
 
-  async signup() {
-    return "Hello";
+  async signup(body: NSignup.Body.IOtpSignupBody) {
+    return body;
   }
 }
