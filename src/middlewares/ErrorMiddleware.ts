@@ -1,4 +1,4 @@
-import { BaseError } from "@/utils/error/ErrorHandler";
+import { BaseError } from "../utils/error/ErrorHandler";
 import { NextFunction, Request, Response } from "express"; // Import the Request type
 
 export default class ErrorHandler {

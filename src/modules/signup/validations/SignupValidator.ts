@@ -14,6 +14,23 @@ export default class SignupValidator {
     ];
   }
 
+  public otpVerificationValidator(): ValidationChain[] {
+    return [
+      body("number")
+        .trim()
+        .custom((value) => globalUtils.isIndianMobileNumber(value))
+        .withMessage("Invalid mobile number"),
+      body("otp")
+        .trim()
+        .isLength({ min: 6, max: 6 })
+        .withMessage("Invalid OTP"),
+      body("activationID")
+        .trim()
+        .custom((value) => globalUtils.isUUID(value))
+        .withMessage("Invalid activation ID"),
+    ];
+  }
+
   public passwordSignupValidator(): ValidationChain[] {
     return [
       body("email").trim().isEmail().withMessage("Invalid email provided"),

@@ -2,7 +2,13 @@
 declare namespace NSignup {
   namespace Body {
     interface IOtpSignupBody {
-      number: number;
+      number: string;
+    }
+
+    interface IVerifyOTP {
+      number: string;
+      otp: string;
+      activationID: string;
     }
   }
 }
