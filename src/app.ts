@@ -35,10 +35,10 @@ const signoutController = container.resolve(SignoutController);
 const currentUserController = container.resolve(UserController);
 
 // route handling
-app.use("/api/users", signinController.routes());
-app.use("/api/users", signupController.routes());
-app.use("/api/users", signoutController.routes());
-app.use("/api/users", currentUserController.routes());
+app.use("/api/auth", signinController.routes());
+app.use("/api/auth", signupController.routes());
+app.use("/api/auth", signoutController.routes());
+app.use("/api/auth", currentUserController.routes());
 
 app.all("*", async () => {
   throw new NotFoundError();

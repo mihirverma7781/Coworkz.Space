@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // SignupController.ts
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction, request } from "express";
 import { autoInjectable } from "tsyringe";
 import { validationResult } from "express-validator";
 import SignupService from "./SignupService";
@@ -24,7 +24,7 @@ export default class SignupController {
     response.send(this.signupService.testService());
   };
 
-  // Sign-up OTP Controller
+  // otp sending controller
   public signupWithOTP = async (
     request: Request,
     response: Response,
@@ -40,13 +40,36 @@ export default class SignupController {
         throw new BadRequestError(errorMessages);
       }
       const input = request.body;
-      const result: any = await this.signupService.signup(input);
+      const result: any = await this.signupService.sendOTP(input);
       if (!Object.keys(result) || result.code === 200) {
         throw new APIError("Error Creating User Account");
       }
-      return response.json(result);
-    } catch (error) {
-      console.error("Error in signupRequest:", error);
+      return response.status(result.status).json(result);
+    } catch (error: any) {
+      console.error("Error in signupRequest:", error.message);
+      next(error);
+    }
+  };
+
+  // otp verification controller
+  public verifyOTP = async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const errors = validationResult(request);
+      if (!errors.isEmpty()) {
+        const errorMessages = errors
+          .array()
+          .map((error) => error.msg)
+          .join(", ");
+        throw new BadRequestError(errorMessages);
+      }
+      const input = request.body;
+      const result: any = await this.signupService.verifyOTP(input);
+    } catch (error: any) {
+      console.error("Error in signupRequest:", error.message);
       next(error);
     }
   };
@@ -58,6 +81,11 @@ export default class SignupController {
       "/signup-sendotp",
       this.signupValidator.otpSignupValidator(),
       this.signupWithOTP,
+    );
+    this.router.post(
+      "/signup-otpverify",
+      this.signupValidator.otpVerificationValidator(),
+      this.verifyOTP,
     );
     return this.router;
   }
