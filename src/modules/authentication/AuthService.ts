@@ -1,30 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { autoInjectable } from "tsyringe";
-import SignupRepository from "./SignupRepository";
+import AuthRepository from "./AuthRepository";
 import NSignup from "./typings";
 import RedisClient from "../../configs/redis.config";
 import { APIError } from "../../utils/error/ErrorHandler";
 import { randomUUID } from "crypto";
 
 @autoInjectable()
-export default class SignupService {
-  private signupRepository: SignupRepository;
+export default class AuthService {
+  private authRepository: AuthRepository;
   private redis: RedisClient;
 
-  constructor(signupRepository: SignupRepository, redis: RedisClient) {
-    this.signupRepository = signupRepository;
+  constructor(authRepository: AuthRepository, redis: RedisClient) {
+    this.authRepository = authRepository;
     this.redis = redis;
   }
 
   async testService() {
-    return this.signupRepository.testRepository();
+    return this.authRepository.testRepository();
   }
 
   async sendOTP(body: NSignup.Body.IOtpSignupBody) {
     try {
       // check user existence
       const input = { ...body, type: "number" };
-      const userExist = await this.signupRepository.checkUserExistance(input);
+      const userExist = await this.authRepository.checkUserExistance(input);
       if (userExist) {
         throw new APIError("Mobile number already registered");
       } else {
@@ -56,7 +56,7 @@ export default class SignupService {
 
   async verifyOTP(body: NSignup.Body.IVerifyOTP) {
     try {
-      const userExist = await this.signupRepository.checkUserExistance({
+      const userExist = await this.authRepository.checkUserExistance({
         number: body.number,
         type: "number",
       });

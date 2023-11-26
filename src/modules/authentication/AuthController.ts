@@ -3,25 +3,25 @@
 import { Router, Request, Response, NextFunction, request } from "express";
 import { autoInjectable } from "tsyringe";
 import { validationResult } from "express-validator";
-import SignupService from "./SignupService";
+import AuthService from "./AuthService";
 import SignupValidator from "./validations/SignupValidator";
 import { APIError, BadRequestError } from "../../utils/error/ErrorHandler";
 
 @autoInjectable()
-export default class SignupController {
-  private signupService: SignupService;
+export default class AuthController {
+  private authService: AuthService;
   private signupValidator: SignupValidator;
   private router: Router;
 
-  constructor(signupService: SignupService, signupValidator: SignupValidator) {
-    this.signupService = signupService;
+  constructor(authService: AuthService, signupValidator: SignupValidator) {
+    this.authService = authService;
     this.signupValidator = signupValidator;
     this.router = Router();
   }
 
   // Testing route
   public testRequest = (request: Request, response: Response) => {
-    response.send(this.signupService.testService());
+    response.send(this.authService.testService());
   };
 
   // otp sending controller
@@ -40,7 +40,7 @@ export default class SignupController {
         throw new BadRequestError(errorMessages);
       }
       const input = request.body;
-      const result: any = await this.signupService.sendOTP(input);
+      const result: any = await this.authService.sendOTP(input);
       if (!Object.keys(result) || result.code === 200) {
         throw new APIError("Error Creating User Account");
       }
@@ -67,7 +67,7 @@ export default class SignupController {
         throw new BadRequestError(errorMessages);
       }
       const input = request.body;
-      const result: any = await this.signupService.verifyOTP(input);
+      const result: any = await this.authService.verifyOTP(input);
     } catch (error: any) {
       console.error("Error in signupRequest:", error.message);
       next(error);
@@ -78,12 +78,12 @@ export default class SignupController {
   public routes() {
     this.router.get("/test", this.testRequest);
     this.router.post(
-      "/signup-sendotp",
+      "/sendotp",
       this.signupValidator.otpSignupValidator(),
       this.signupWithOTP,
     );
     this.router.post(
-      "/signup-otpverify",
+      "/otpverify",
       this.signupValidator.otpVerificationValidator(),
       this.verifyOTP,
     );

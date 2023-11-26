@@ -6,7 +6,7 @@ interface IUserExistanceInput {
   type: string;
 }
 
-export default class SignupRepository {
+export default class AuthRepository {
   private userModel;
   constructor() {
     this.userModel = User;

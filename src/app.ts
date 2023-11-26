@@ -4,9 +4,7 @@ import "express-async-errors";
 import { container } from "tsyringe";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import SigninController from "./modules/signin/SigninController";
-import SignupController from "./modules/signup/SignupController";
-import SignoutController from "./modules/signout/SignoutController";
+import AuthController from "./modules/authentication/AuthController";
 import UserController from "./modules/user/UserController";
 import ErrorHandler from "./middlewares/ErrorMiddleware";
 import { NotFoundError } from "./utils/error/ErrorHandler";
@@ -29,15 +27,11 @@ const db = new Database();
 db.connectDB();
 
 // dependency injection
-const signinController = container.resolve(SigninController);
-const signupController = container.resolve(SignupController);
-const signoutController = container.resolve(SignoutController);
+const authController = container.resolve(AuthController);
 const currentUserController = container.resolve(UserController);
 
 // route handling
-app.use("/api/auth", signinController.routes());
-app.use("/api/auth", signupController.routes());
-app.use("/api/auth", signoutController.routes());
+app.use("/api/auth", authController.routes());
 app.use("/api/auth", currentUserController.routes());
 
 app.all("*", async () => {
