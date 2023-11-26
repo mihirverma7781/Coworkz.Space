@@ -1,9 +1,19 @@
+import {
+  APIError,
+  BadGatewayError,
+  BadRequestError,
+} from "@/utils/error/ErrorHandler";
 import User from "../../models/user.model";
 
 interface IUserExistanceInput {
   number?: string;
   email?: string;
   type: string;
+}
+
+interface IUserCreate {
+  number: string;
+  isNumberVerified: boolean;
 }
 
 export default class AuthRepository {
@@ -33,7 +43,16 @@ export default class AuthRepository {
         return false;
       }
     } catch (error) {
-      return error;
+      throw error;
+    }
+  }
+
+  async createNewUser(data: IUserCreate) {
+    try {
+      const newUser = await this.userModel.create(data);
+      return newUser;
+    } catch (error) {
+      throw error;
     }
   }
 }

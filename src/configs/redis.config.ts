@@ -5,7 +5,7 @@ export default class RedisClient {
 
   constructor() {
     this.client = new Redis({
-      host: "auth-redis-srv",
+      host: "localhost",
       port: 6379,
     });
     this.client.on("connect", () => {

@@ -4,6 +4,7 @@ import "express-async-errors";
 import { container } from "tsyringe";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import "dotenv/config";
 import AuthController from "./modules/authentication/AuthController";
 import UserController from "./modules/user/UserController";
 import ErrorHandler from "./middlewares/ErrorMiddleware";
@@ -17,7 +18,7 @@ const app: Express = express();
 app.use(express.json({ limit: "50mb" }));
 
 // cookie parser
-app.use(cookieParser());
+app.use(cookieParser(process.env.APP_COOKIE_SIGNED_KEY));
 
 // cors
 app.use(cors());
@@ -31,8 +32,8 @@ const authController = container.resolve(AuthController);
 const currentUserController = container.resolve(UserController);
 
 // route handling
-app.use("/api/auth", authController.routes());
-app.use("/api/auth", currentUserController.routes());
+app.use("/api/v1/auth", authController.routes());
+app.use("/api/v1/user", currentUserController.routes());
 
 app.all("*", async () => {
   throw new NotFoundError();

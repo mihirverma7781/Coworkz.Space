@@ -28,6 +28,10 @@ const userSchema: Schema<NModel.IUserModel> = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isOnboarded: {
+      type: Boolean,
+      default: false,
+    },
     number: {
       type: String,
       validate: {

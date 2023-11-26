@@ -7,7 +7,7 @@ export default class Database {
   async connectDB() {
     try {
       const connection = await mongoose.connect(
-        "mongodb://auth-mongo-srv:27017/unison-auth",
+        "mongodb://127.0.0.1:27017/CoworkzSpace",
       );
       console.log(`Database connected with => ${connection.connection.host}`);
     } catch (error) {

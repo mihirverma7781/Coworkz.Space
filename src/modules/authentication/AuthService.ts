@@ -3,16 +3,23 @@ import { autoInjectable } from "tsyringe";
 import AuthRepository from "./AuthRepository";
 import NSignup from "./typings";
 import RedisClient from "../../configs/redis.config";
-import { APIError } from "../../utils/error/ErrorHandler";
+import { APIError, BadRequestError } from "../../utils/error/ErrorHandler";
 import { randomUUID } from "crypto";
+import TokenUtils from "../../utils/token.utils";
 
 @autoInjectable()
 export default class AuthService {
   private authRepository: AuthRepository;
+  private tokenUtils: TokenUtils;
   private redis: RedisClient;
 
-  constructor(authRepository: AuthRepository, redis: RedisClient) {
+  constructor(
+    authRepository: AuthRepository,
+    redis: RedisClient,
+    tokenUtils: TokenUtils,
+  ) {
     this.authRepository = authRepository;
+    this.tokenUtils = tokenUtils;
     this.redis = redis;
   }
 
@@ -26,7 +33,7 @@ export default class AuthService {
       const input = { ...body, type: "number" };
       const userExist = await this.authRepository.checkUserExistance(input);
       if (userExist) {
-        throw new APIError("Mobile number already registered");
+        throw new BadRequestError("Mobile number already registered");
       } else {
         const OTP = Math.floor(100000 + Math.random() * 900000);
         console.log("OTP: ", OTP);
@@ -50,7 +57,7 @@ export default class AuthService {
         };
       }
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -61,18 +68,49 @@ export default class AuthService {
         type: "number",
       });
       if (userExist) {
-        throw new APIError("Mobile number already registered");
+        throw new BadRequestError("Mobile number already registered");
       } else {
         const activationDetails: any = await this.redis.get(body.number);
+        const parsedDetails: any = JSON.parse(activationDetails);
         if (
-          activationDetails.otp === body.otp &&
-          activationDetails.activationID === body.activationID
+          parsedDetails.otp === Number(body.otp) &&
+          parsedDetails.activationID === body.activationID
         ) {
-          // create a user
+          const payload = {
+            number: body.number,
+            isNumberVerified: true,
+          };
+          const user = await this.authRepository.createNewUser(payload);
+          if (!user) {
+            throw new BadRequestError("Error Creating User");
+          } else {
+            const token = this.tokenUtils.generateAuthToken(
+              user.number,
+              user.tenetID,
+            );
+            console.log("🚀 ~ file: AuthService.ts:95 ~ AuthService ~ verifyOTP ~ token:", token)
+            if (!token) {
+              console.log("inside token")
+              throw new APIError();
+            } else {
+              await this.redis.set(user.tenetID, JSON.stringify(token));
+              return {
+                message: "OTP verified Successfully",
+                status: 201,
+                success: true,
+                token,
+                data: {
+                  user,
+                },
+              };
+            }
+          }
+        } else {
+          throw new BadRequestError("Invalid Verification Details");
         }
       }
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 }

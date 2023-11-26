@@ -4,6 +4,7 @@ declare namespace NModel {
     tenetID: string;
     email: string;
     isEmailVerified: boolean;
+    isOnboarded: boolean;
     number: string;
     isNumberVerified: boolean;
     password: string;

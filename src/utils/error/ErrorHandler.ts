@@ -5,6 +5,7 @@ export enum ErrorCodes {
   UN_AUTHORIZED = 401,
   NOT_FOUND = 404,
   INTERNAL_SERVER = 500,
+  BAD_GATEWAY = 502,
 }
 
 // BASE ERROR CLASS
@@ -48,5 +49,12 @@ export class UnAuthorizError extends BaseError {
 export class NotFoundError extends BaseError {
   constructor(description = "Not Found") {
     super("NOT FOUND ERROR", ErrorCodes.NOT_FOUND, description);
+  }
+}
+
+// 502 NOT FOUND ERROR
+export class BadGatewayError extends BaseError {
+  constructor(description = "Bad Gateway") {
+    super("BAD GATEWAY ERROR", ErrorCodes.BAD_GATEWAY, description);
   }
 }
