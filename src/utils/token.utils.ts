@@ -23,11 +23,7 @@ export default class TokenUtils {
       );
       return decodedPayload;
     } catch (error: any) {
-      if (error.name === "TokenExpiredError") {
-        return "Token has expired";
-      } else {
-        return "Invalid token";
-      }
+      return error;
     }
   }
 }

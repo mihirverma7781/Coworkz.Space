@@ -1,21 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // SignupController.ts
-import { Router, Request, Response, NextFunction, request } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { autoInjectable } from "tsyringe";
 import { cookie, validationResult } from "express-validator";
 import AuthService from "./AuthService";
 import SignupValidator from "./validations/SignupValidator";
 import { APIError, BadRequestError } from "../../utils/error/ErrorHandler";
+import AuthMiddleware from "../../middlewares/authMiddleware";
 
 @autoInjectable()
 export default class AuthController {
+  private authMiddleware: AuthMiddleware;
   private authService: AuthService;
   private signupValidator: SignupValidator;
   private router: Router;
 
-  constructor(authService: AuthService, signupValidator: SignupValidator) {
+  constructor(
+    authService: AuthService,
+    signupValidator: SignupValidator,
+    authMiddleware: AuthMiddleware,
+  ) {
     this.authService = authService;
     this.signupValidator = signupValidator;
+    this.authMiddleware = authMiddleware;
     this.router = Router();
   }
 
@@ -83,12 +90,33 @@ export default class AuthController {
         throw new APIError();
       }
     } catch (error: any) {
-      console.error("Error in signupRequest:", error.message);
       next(error);
     }
   };
 
-  // Define and return the router
+  // update password
+  public updatePassword = async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const errors = validationResult(request);
+      if (!errors.isEmpty()) {
+        const errorMessages = errors
+          .array()
+          .map((error) => error.msg)
+          .join(", ");
+        throw new BadRequestError(errorMessages);
+      }
+      const input = request.body;
+      const result: any = await this.authService.updatePassword(input);
+    } catch (error: any) {
+      next(error);
+    }
+  };
+
+  // router
   public routes() {
     this.router.get("/test", this.testRequest);
     this.router.post(
@@ -100,6 +128,12 @@ export default class AuthController {
       "/verifyotp",
       this.signupValidator.otpVerificationValidator(),
       this.verifyOTP,
+    );
+    this.router.patch(
+      "/update-password",
+      this.authMiddleware.authenticate,
+      this.signupValidator.paswordValidator(),
+      this.updatePassword,
     );
     return this.router;
   }

@@ -88,12 +88,13 @@ export default class AuthService {
               user.number,
               user.tenetID,
             );
-            console.log("🚀 ~ file: AuthService.ts:95 ~ AuthService ~ verifyOTP ~ token:", token)
             if (!token) {
-              console.log("inside token")
               throw new APIError();
             } else {
-              await this.redis.set(user.tenetID, JSON.stringify(token));
+              await this.redis.set(
+                user.tenetID,
+                JSON.stringify({ token, user }),
+              );
               return {
                 message: "OTP verified Successfully",
                 status: 201,
@@ -109,6 +110,14 @@ export default class AuthService {
           throw new BadRequestError("Invalid Verification Details");
         }
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePassword(body: any) {
+    try {
+      return true
     } catch (error) {
       throw error;
     }
