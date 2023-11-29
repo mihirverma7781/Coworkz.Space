@@ -6,20 +6,24 @@ import RedisClient from "../../configs/redis.config";
 import { APIError, BadRequestError } from "../../utils/error/ErrorHandler";
 import { randomUUID } from "crypto";
 import TokenUtils from "../../utils/token.utils";
+import CryptoUtils from "../../utils/crypto.utils";
 
 @autoInjectable()
 export default class AuthService {
   private authRepository: AuthRepository;
   private tokenUtils: TokenUtils;
+  private cryptoUtils: CryptoUtils;
   private redis: RedisClient;
 
   constructor(
     authRepository: AuthRepository,
     redis: RedisClient,
     tokenUtils: TokenUtils,
+    cryptoUtils: CryptoUtils,
   ) {
     this.authRepository = authRepository;
     this.tokenUtils = tokenUtils;
+    this.cryptoUtils = cryptoUtils;
     this.redis = redis;
   }
 
@@ -117,7 +121,7 @@ export default class AuthService {
 
   async updatePassword(body: any) {
     try {
-      return true
+      return true;
     } catch (error) {
       throw error;
     }
