@@ -47,10 +47,41 @@ export default class AuthRepository {
     }
   }
 
+  async getUserByTenetId(tenetID: string) {
+    try {
+      let user = await this.userModel.findOne({
+        tenetID: tenetID,
+      });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async createNewUser(data: IUserCreate) {
     try {
       const newUser = await this.userModel.create(data);
       return newUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePassword(hash: string, tenetID: string) {
+    try {
+      const updateUser = await this.userModel.findOneAndUpdate(
+        {
+          tenetID: tenetID,
+        },
+        {
+          password: hash,
+          isPasswordUpdated: true,
+        },
+        {
+          new: true,
+        },
+      );
+      return updateUser;
     } catch (error) {
       throw error;
     }

@@ -29,6 +29,7 @@ export default class AuthMiddleware {
             userData.tenetID === parsedData.user.tenetID
           ) {
             request.user = parsedData.user;
+            request.token = token;
             next();
           } else {
             throw new APIError("Invalid Token Error!");

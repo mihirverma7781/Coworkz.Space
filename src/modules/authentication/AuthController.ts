@@ -110,7 +110,22 @@ export default class AuthController {
         throw new BadRequestError(errorMessages);
       }
       const input = request.body;
-      const result: any = await this.authService.updatePassword(input);
+      const user = request.user;
+      const result: any = await this.authService.updatePassword(
+        input,
+        user?.tenetID,
+      );
+      if (Object.keys(result) && result.status === 200) {
+        const cookieOptions = {
+          httpOnly: true,
+          signed: true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        };
+        response.cookie("user_details", result.data, cookieOptions);
+        return response.status(result.status).json(result);
+      } else {
+        throw new APIError();
+      }
     } catch (error: any) {
       next(error);
     }

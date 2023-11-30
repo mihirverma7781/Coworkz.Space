@@ -24,6 +24,10 @@ const userSchema: Schema<NModel.IUserModel> = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isPasswordUpdated: {
+      type: Boolean,
+      default: false,
+    },
     isNumberVerified: {
       type: Boolean,
       default: false,

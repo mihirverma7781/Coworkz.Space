@@ -3,7 +3,11 @@ import { autoInjectable } from "tsyringe";
 import AuthRepository from "./AuthRepository";
 import NSignup from "./typings";
 import RedisClient from "../../configs/redis.config";
-import { APIError, BadRequestError } from "../../utils/error/ErrorHandler";
+import {
+  APIError,
+  BadRequestError,
+  BaseError,
+} from "../../utils/error/ErrorHandler";
 import { randomUUID } from "crypto";
 import TokenUtils from "../../utils/token.utils";
 import CryptoUtils from "../../utils/crypto.utils";
@@ -119,9 +123,38 @@ export default class AuthService {
     }
   }
 
-  async updatePassword(body: any) {
+  async updatePassword(body: any, tenetID: any) {
     try {
-      return true;
+      const plainPassword: string = body.password;
+      const fetchedUser: any =
+        await this.authRepository.getUserByTenetId(tenetID);
+
+      if (
+        plainPassword.length >= 8 &&
+        fetchedUser?.isPasswordUpdated === false &&
+        !fetchedUser?.isOnboarded &&
+        fetchedUser?.isNumberVerified
+      ) {
+        const hashedPassword: string =
+          this.cryptoUtils.hashPlainText(plainPassword);
+        const update = await this.authRepository.updatePassword(
+          hashedPassword,
+          tenetID,
+        );
+        if (update) {
+          update.password = "";
+          return {
+            message: "Password Updated Successfully!",
+            status: 200,
+            success: true,
+            data: update,
+          };
+        } else {
+          throw new BadRequestError("Password Not Updated");
+        }
+      } else {
+        throw new BadRequestError("Invalid Password Update Request");
+      }
     } catch (error) {
       throw error;
     }
