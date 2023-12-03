@@ -31,13 +31,16 @@ export default class SignupValidator {
     ];
   }
 
-  public passwordSignupValidator(): ValidationChain[] {
+  public passwordLoginValidator(): ValidationChain[] {
     return [
-      body("email").trim().isEmail().withMessage("Invalid email provided"),
+      body("number")
+        .trim()
+        .custom((value) => globalUtils.isIndianMobileNumber(value))
+        .withMessage("Invalid mobile number"),
       body("password")
         .trim()
-        .isLength({ min: 4, max: 20 })
-        .withMessage("Password must be between 4 and 20 characters"),
+        .isLength({ min: 4, max: 4 })
+        .withMessage("Password must be  4  characters"),
     ];
   }
 

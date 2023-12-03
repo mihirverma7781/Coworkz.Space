@@ -37,33 +37,26 @@ export default class AuthService {
 
   async sendOTP(body: NSignup.Body.IOtpSignupBody) {
     try {
-      // check user existence
-      const input = { ...body, type: "number" };
-      const userExist = await this.authRepository.checkUserExistance(input);
-      if (userExist) {
-        throw new BadRequestError("Mobile number already registered");
-      } else {
-        const OTP = Math.floor(100000 + Math.random() * 900000);
-        console.log("OTP: ", OTP);
-        const activationID = randomUUID();
-        // TODO: ASSUMING WE HAVE SENT THE OTP TO USER get and remove it first
+      const OTP = Math.floor(100000 + Math.random() * 900000);
+      console.log("OTP: ", OTP);
+      const activationID = randomUUID();
+      // TODO: ASSUMING WE HAVE SENT THE OTP TO USER get and remove it first
 
-        await this.redis.set(
-          body.number,
-          JSON.stringify({
-            otp: OTP,
-            activationID: activationID,
-          }),
-        );
-        return {
-          message: "OTP sent successfully",
-          status: 200,
-          success: true,
-          data: {
-            activationID,
-          },
-        };
-      }
+      await this.redis.set(
+        body.number,
+        JSON.stringify({
+          otp: OTP,
+          activationID: activationID,
+        }),
+      );
+      return {
+        message: "OTP sent successfully",
+        status: 200,
+        success: true,
+        data: {
+          activationID,
+        },
+      };
     } catch (error) {
       throw error;
     }
@@ -71,15 +64,43 @@ export default class AuthService {
 
   async verifyOTP(body: NSignup.Body.IVerifyOTP) {
     try {
-      const userExist = await this.authRepository.checkUserExistance({
+      const userExist = await this.authRepository.getUserDataWithNumberEmail({
         number: body.number,
         type: "number",
       });
-      if (userExist) {
-        throw new BadRequestError("Mobile number already registered");
+      const activationDetails: any = await this.redis.get(body.number);
+      const parsedDetails: any = JSON.parse(activationDetails);
+      if (userExist.userExist && userExist.userData) {
+        if (
+          parsedDetails.otp === Number(body.otp) &&
+          parsedDetails.activationID === body.activationID
+        ) {
+          const token = this.tokenUtils.generateAuthToken(
+            userExist.userData.number,
+            userExist.userData.tenetID,
+          );
+          if (!token) {
+            throw new APIError();
+          } else {
+            const userData = userExist.userData;
+            await this.redis.set(
+              userData.tenetID,
+              JSON.stringify({ token, userData }),
+            );
+            return {
+              message: "OTP verified Successfully",
+              status: 201,
+              success: true,
+              token,
+              data: {
+                userData,
+              },
+            };
+          }
+        } else {
+          throw new BadRequestError("Invalid Verification Details");
+        }
       } else {
-        const activationDetails: any = await this.redis.get(body.number);
-        const parsedDetails: any = JSON.parse(activationDetails);
         if (
           parsedDetails.otp === Number(body.otp) &&
           parsedDetails.activationID === body.activationID
@@ -159,4 +180,20 @@ export default class AuthService {
       throw error;
     }
   }
+
+  // async loginWithPassword(body: any) {
+  //   const { number, password } = body;
+  //   const userExist = await this.authRepository.getUserDataWithNumberEmail({
+  //     number: number,
+  //     type: "number",
+  //   });
+  //   if (!userExist.userExist && !userExist.userData) {
+  //     return new BadRequestError("User does not exist!");
+  //   } else {
+  //     const comparePasswords = await this.cryptoUtils.comparePlainText(
+  //       password,
+  //       userExist?.userData?.password || "",
+  //     );
+  //   }
+  // }
 }

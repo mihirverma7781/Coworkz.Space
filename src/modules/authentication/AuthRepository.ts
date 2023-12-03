@@ -86,4 +86,32 @@ export default class AuthRepository {
       throw error;
     }
   }
+
+  async getUserDataWithNumberEmail(data: IUserExistanceInput) {
+    try {
+      let user;
+      if (data.type === "number") {
+        user = await this.userModel.findOne({
+          number: data.number,
+        });
+      } else if (data.type === "email") {
+        user = await this.userModel.findOne({
+          number: data.email,
+        });
+      }
+      if (user) {
+        return {
+          userExist: true,
+          userData: user,
+        };
+      } else {
+        return {
+          userExist: false,
+          userData: null,
+        };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }

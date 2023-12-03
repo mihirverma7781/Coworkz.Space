@@ -131,6 +131,41 @@ export default class AuthController {
     }
   };
 
+  // login password
+  // public passwordLogin = async (
+  //   request: Request,
+  //   response: Response,
+  //   next: NextFunction,
+  // ) => {
+  //   try {
+  //     const errors = validationResult(request);
+  //     if (!errors.isEmpty()) {
+  //       const errorMessages = errors
+  //         .array()
+  //         .map((error) => error.msg)
+  //         .join(", ");
+  //       throw new BadRequestError(errorMessages);
+  //     }
+  //     const input = request.body;
+  //     const result: any = await this.authService.loginWithPassword(input);
+  //     if (Object.keys(result) && result.status === 200) {
+  //       const cookieOptions = {
+  //         httpOnly: true,
+  //         signed: true,
+  //         maxAge: 7 * 24 * 60 * 60 * 1000,
+  //       };
+  //       response.cookie("access_token", result.token, cookieOptions);
+  //       response.cookie("user_details", result.data.user, cookieOptions);
+  //       delete result["token"];
+  //       return response.status(result.status).json(result);
+  //     } else {
+  //       throw new APIError();
+  //     }
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // };
+
   // router
   public routes() {
     this.router.get("/test", this.testRequest);
@@ -150,6 +185,11 @@ export default class AuthController {
       this.signupValidator.paswordValidator(),
       this.updatePassword,
     );
+    // this.router.post(
+    //   "/login",
+    //   this.signupValidator.passwordLoginValidator(),
+    //   this.passwordLogin,
+    // );
     return this.router;
   }
 }
