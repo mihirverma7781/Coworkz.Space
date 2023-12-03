@@ -8,23 +8,23 @@ declare namespace NModel {
     isOnboarded: boolean;
     number: string;
     isNumberVerified: boolean;
-    password: string;
-    basicDetails: IBasicDetails;
-    workDetails: IWorkDetails[];
-    educationalDetails: IEducationDetails[];
-    certificationDetails: ICertificationDetails[];
-    socialHandles: ISocialDetails;
-    skills: string[];
+    password?: string;
+    basicDetails?: IBasicDetails;
+    workDetails?: IWorkDetails[];
+    educationalDetails?: IEducationDetails[];
+    certificationDetails?: ICertificationDetails[];
+    socialHandles?: ISocialDetails;
+    skills?: string[];
   }
 
   interface IBasicDetails {
     firstName: string;
     lastName: string;
     location: string;
-    profileUrl: string;
-    workAuthorization: EWorkAuthorization;
+    profileUrl?: string;
+    workAuthorization?: EWorkAuthorization;
     profileHeadline: string;
-    profileDescription: string;
+    profileDescription?: string;
     mobileVisible: boolean;
     whatsappUpdates: boolean;
   }

@@ -2,7 +2,7 @@
 // SignupController.ts
 import { Router, Request, Response, NextFunction } from "express";
 import { autoInjectable } from "tsyringe";
-import { cookie, validationResult } from "express-validator";
+import { validationResult } from "express-validator";
 import AuthService from "./AuthService";
 import SignupValidator from "./validations/SignupValidator";
 import { APIError, BadRequestError } from "../../utils/error/ErrorHandler";
@@ -83,7 +83,7 @@ export default class AuthController {
           maxAge: 7 * 24 * 60 * 60 * 1000,
         };
         response.cookie("access_token", result.token, cookieOptions);
-        response.cookie("user_details", result.data.user, cookieOptions);
+        response.cookie("user_details", result.data.userData, cookieOptions);
         delete result["token"];
         return response.status(result.status).json(result);
       } else {

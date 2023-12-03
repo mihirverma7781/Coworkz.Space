@@ -2,7 +2,7 @@ import {
   APIError,
   BadGatewayError,
   BadRequestError,
-} from "@/utils/error/ErrorHandler";
+} from "../../utils/error/ErrorHandler";
 import User from "../../models/user.model";
 
 interface IUserExistanceInput {
@@ -42,8 +42,8 @@ export default class AuthRepository {
       } else {
         return false;
       }
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw new APIError(error.message);
     }
   }
 
@@ -53,8 +53,8 @@ export default class AuthRepository {
         tenetID: tenetID,
       });
       return user;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw new APIError(error.message);
     }
   }
 
@@ -62,8 +62,8 @@ export default class AuthRepository {
     try {
       const newUser = await this.userModel.create(data);
       return newUser;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw new APIError(error.message);
     }
   }
 
@@ -82,8 +82,8 @@ export default class AuthRepository {
         },
       );
       return updateUser;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw new APIError(error.message);
     }
   }
 
@@ -110,8 +110,8 @@ export default class AuthRepository {
           userData: null,
         };
       }
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw new APIError(error.message);
     }
   }
 }

@@ -57,8 +57,8 @@ export default class AuthService {
           activationID,
         },
       };
-    } catch (error) {
-      throw error;
+    } catch (error:any) {
+      throw new APIError(error.message);
     }
   }
 
@@ -139,8 +139,8 @@ export default class AuthService {
           throw new BadRequestError("Invalid Verification Details");
         }
       }
-    } catch (error) {
-      throw error;
+    } catch (error:any) {
+      throw new APIError(error.message);
     }
   }
 
@@ -176,8 +176,8 @@ export default class AuthService {
       } else {
         throw new BadRequestError("Invalid Password Update Request");
       }
-    } catch (error) {
-      throw error;
+    } catch (error:any) {
+      throw new APIError(error.message);
     }
   }
 

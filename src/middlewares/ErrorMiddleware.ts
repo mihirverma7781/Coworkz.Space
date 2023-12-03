@@ -23,7 +23,7 @@ export default class ErrorHandler {
     // Log the error for debugging purposes
 
     // Send a JSON response with the error message and status code
-    this.response.status(this.error.statusCode).json({
+    this.response.status(this.error.statusCode || 500).json({
       error: this.error,
     });
   }

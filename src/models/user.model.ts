@@ -50,47 +50,46 @@ const userSchema: Schema<NModel.IUserModel> = new mongoose.Schema(
       minLength: [4, "Password must be at least 8 characters long"],
       default: null,
     },
-    basicDetails: [
-      {
-        firstName: {
-          type: String,
-          min: [2, "Firstname must be atleast two characters long"],
-          max: [20, "First name must be atmost 20 characters long"],
-        },
-        lastName: {
-          type: String,
-          min: [2, "Last name must be atleast two characters long"],
-          max: [20, "Last name must be atmost 20 characters long"],
-        },
-        location: {
-          type: String,
-        },
-        profileUrl: {
-          type: String,
-        },
-        workAuthorization: {
-          type: String,
-        },
-        profileHeadline: {
-          type: String,
-          min: [10, "Profile headline must be atleast 10 characters long"],
-          max: [30, "Profile headline must be atmost 30 characters long"],
-        },
-        profileDescription: {
-          type: String,
-          min: [10, "Profile description must be atleast 10 characters long"],
-          max: [30, "Profile description must be atmost 150 characters long"],
-        },
-        mobileVisible: {
-          type: Boolean,
-          default: false,
-        },
-        whatsappUpdates: {
-          type: Boolean,
-          default: false,
-        },
+    basicDetails: {
+      firstName: {
+        type: String,
+        min: [2, "Firstname must be atleast two characters long"],
+        max: [20, "First name must be atmost 20 characters long"],
       },
-    ],
+      lastName: {
+        type: String,
+        min: [2, "Last name must be atleast two characters long"],
+        max: [20, "Last name must be atmost 20 characters long"],
+      },
+      location: {
+        type: String,
+      },
+      profileUrl: {
+        type: String,
+      },
+      workAuthorization: {
+        type: String,
+      },
+      profileHeadline: {
+        type: String,
+        min: [10, "Profile headline must be atleast 10 characters long"],
+        max: [50, "Profile headline must be atmost 50 characters long"],
+      },
+      profileDescription: {
+        type: String,
+        min: [10, "Profile description must be atleast 10 characters long"],
+        max: [150, "Profile description must be atmost 150 characters long"],
+      },
+      mobileVisible: {
+        type: Boolean,
+        default: false,
+      },
+      whatsappUpdates: {
+        type: Boolean,
+        default: false,
+      },
+    },
+
     workDetails: [
       {
         employer: {

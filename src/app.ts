@@ -29,11 +29,11 @@ db.connectDB();
 
 // dependency injection
 const authController = container.resolve(AuthController);
-const currentUserController = container.resolve(UserController);
+const userController = container.resolve(UserController);
 
 // route handling
 app.use("/api/v1/auth", authController.routes());
-app.use("/api/v1/user", currentUserController.routes());
+app.use("/api/v1/user", userController.routes());
 
 app.all("*", async () => {
   throw new NotFoundError();

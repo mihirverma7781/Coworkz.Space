@@ -13,22 +13,23 @@ export default class AuthMiddleware {
     try {
       const token = request.signedCookies["access_token"];
       const userData = request.signedCookies["user_details"];
-
       if (!token || !Object.keys(userData)) {
         throw new APIError("Invalid Token Error!");
       } else {
         const cachedInfo = await redis.get(userData.tenetID);
         const parsedData = JSON.parse(cachedInfo || "");
+
         if (parsedData.token !== token) {
           throw new APIError("Invalid Token Error!");
         } else {
           const decodedToken = tokenUtils.verifyAuthToken(token);
+
           if (
-            decodedToken.userId === parsedData.user.tenetID &&
-            decodedToken.number === parsedData.user.number &&
-            userData.tenetID === parsedData.user.tenetID
+            decodedToken.userId === parsedData.userData.tenetID &&
+            decodedToken.number === parsedData.userData.number &&
+            userData.tenetID === parsedData.userData.tenetID
           ) {
-            request.user = parsedData.user;
+            request.user = parsedData.userData;
             request.token = token;
             next();
           } else {
